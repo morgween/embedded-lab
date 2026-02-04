@@ -20,8 +20,8 @@ Projects focus on **real hardware behavior**, **signal stability**, and **clean 
 ## Projects
 
 | Project | Description |
-|------------------------------|-------------|
-| esp32-ultrasonic-distance-feedback | Ultrasonic distance indicator with LED bargraph, buzzer feedback, calibration and button-controlled UI |
+|--------|-------------|
+| [esp32-ultrasonic-distance-feedback](https://github.com/morgween/embedded-lab/tree/main/esp32-ultrasonic-distance-feedback) | Ultrasonic distance indicator with LED bargraph, buzzer and buttons |
 
 More projects will be added over time.
 
