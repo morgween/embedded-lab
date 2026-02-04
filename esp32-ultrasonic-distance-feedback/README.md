@@ -52,6 +52,8 @@ Calibration allows setting a custom maximum distance.
 ## Demo
 
 ![demo](docs/proj.gif)
+
+## Schema
 ![schema](docs/proj.png)
 
 ---
