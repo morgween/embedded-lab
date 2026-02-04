@@ -1,0 +1,15 @@
+# arduino build artifacts
+*.elf
+*.bin
+*.hex
+*.map
+
+# vscode
+.vscode/
+
+# mac / windows junk
+.DS_Store
+Thumbs.db
+
+# arduino cache
+*.tmp
