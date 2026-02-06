@@ -26,7 +26,7 @@ Designed as a small embedded system with filtering, calibration, and button-cont
 - 10-segment LED bargraph
 - active buzzer
 - 3 × push buttons
-- resistors (220Ω)
+- resistors (220Ω, 1kΩ, 2kΩ)
 - breadboard and jumper wires
 
 ## How it works
