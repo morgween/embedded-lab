@@ -12,12 +12,12 @@ void buzzer_force_off() {
   digitalWrite(BUZZER_PIN, LOW);
 }
 
-// distance -> beeping rate, closer = faster
-void buzzer_update_from_distance(float distanceCm, float maxDistanceCm, bool enabled) {
-  static bool buzState = false;
+// closer distance = faster beeping
+void buzzer_update_from_distance(float distanceCm, float maxDist, bool enabled) {
+  static bool          buzState   = false;
   static unsigned long lastToggle = 0;
 
-  if (!enabled) {
+  if (!enabled || distanceCm < 0 || distanceCm > maxDist) {
     if (buzState) {
       buzState = false;
       digitalWrite(BUZZER_PIN, LOW);
@@ -25,19 +25,12 @@ void buzzer_update_from_distance(float distanceCm, float maxDistanceCm, bool ena
     return;
   }
 
-  if (distanceCm < 0 || distanceCm > maxDistanceCm) {
-    if (buzState) {
-      buzState = false;
-      digitalWrite(BUZZER_PIN, LOW);
-    }
-    return;
-  }
-
-  float ratio = 1.0f - (distanceCm / maxDistanceCm);
+  float ratio = 1.0f - (distanceCm / maxDist);
   if (ratio < 0.0f) ratio = 0.0f;
   if (ratio > 1.0f) ratio = 1.0f;
 
-  unsigned long period = (unsigned long)(800 - 700 * ratio); // 800..100 ms
+  unsigned long period = BUZZER_PERIOD_MAX_MS
+                       - (unsigned long)((BUZZER_PERIOD_MAX_MS - BUZZER_PERIOD_MIN_MS) * ratio);
   unsigned long halfPeriod = period / 2;
 
   unsigned long now = millis();

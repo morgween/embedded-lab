@@ -3,7 +3,7 @@
 #include "headers/config.h"
 #include "headers/pins.h"
 
-// single raw measurement, returns cm or -1 if no echo
+// single raw measurement, returns cm or -1 on timeout
 static float ultrasonic_measure_once_cm() {
   digitalWrite(TRIG_PIN, LOW);
   delayMicroseconds(2);
@@ -12,12 +12,9 @@ static float ultrasonic_measure_once_cm() {
   digitalWrite(TRIG_PIN, LOW);
 
   unsigned long duration = pulseIn(ECHO_PIN, HIGH, ECHO_TIMEOUT_US);
-  if (duration == 0) {
-    return -1.0f;
-  }
+  if (duration == 0) return -1.0f;
 
-  float distanceCm = (float)duration / 58.0f;
-  return distanceCm;
+  return (float)duration / 58.0f;
 }
 
 void ultrasonic_init() {
@@ -34,17 +31,12 @@ float ultrasonic_measure_median_cm() {
 
   for (int i = 0; i < MEDIAN_SAMPLES; i++) {
     float d = ultrasonic_measure_once_cm();
-    if (d > 0) {
-      samples[count++] = d;
-    }
+    if (d > 0) samples[count++] = d;
     delay(10);
   }
 
-  if (count == 0) {
-    return -1.0f;
-  }
+  if (count == 0) return -1.0f;
 
-  // simple bubble sort for small arrays
   for (int i = 0; i < count - 1; i++) {
     for (int j = i + 1; j < count; j++) {
       if (samples[j] < samples[i]) {

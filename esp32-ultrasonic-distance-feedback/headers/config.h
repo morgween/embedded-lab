@@ -1,50 +1,40 @@
+#pragma once
 #include <Arduino.h>
-#include "headers/pins.h"
 
-// ================= button state tracking ===========
-static bool btnCalibStable      = false;
-static bool btnCalibPrevStable  = false;
-static unsigned long btnCalibLastChange = 0;
+//====== ultrasonic ======
 
-static bool btnMuteStable       = false;
-static bool btnMutePrevStable   = false;
-static unsigned long btnMuteLastChange = 0;
+static const unsigned long ECHO_TIMEOUT_US = 30000;
+static const int           MEDIAN_SAMPLES  = 5;
 
-static bool btnFreezeStable     = false;
-static bool btnFreezePrevStable = false;
-static unsigned long btnFreezeLastChange = 0;
+//====== distance ======
 
-// ================= hardware config =================
-const int LED_COUNT = sizeof(ledPins) / sizeof(ledPins[0]);
+static const float DEFAULT_MAX_DISTANCE_CM = 100.0f;
+static const float DISTANCE_FILTER_ALPHA   = 0.7f; // ema smoothing factor
 
-// ================= general config =================
-const unsigned long ECHO_TIMEOUT_US = 30000;
+//====== buzzer timing ======
 
-// ================= ultrasonic config =================
-const int MEDIAN_SAMPLES = 5;
+static const unsigned long BUZZER_PERIOD_MAX_MS = 800; // far
+static const unsigned long BUZZER_PERIOD_MIN_MS = 100; // close
 
-// ================= distance config =================
+//====== buttons ======
 
-float maxDistanceCm = 100.0f;               // initial maximum distance in cm
-const float DISTANCE_FILTER_ALPHA = 0.7f;    // ema factor for smoothing
+static const unsigned long DEBOUNCE_MS = 30;
 
-// ================= state machine ===================
+//====== state machine ======
 
 enum State {
-  STATE_NORMAL = 0,        // distance mode: leds + buzzer
-  STATE_CALIBRATING,       // calibration mode: dot animation
-  STATE_CALIB_DONE_ANIM    // short "happy" fill animation after calibration
+  STATE_NORMAL,
+  STATE_CALIBRATING,
+  STATE_CALIB_DONE_ANIM
 };
 
-State currentState = STATE_NORMAL;
+//====== runtime globals ======
 
-// ================= globals =========================
-
-float filteredDistanceCm = -1.0f;
-float lastRawDistanceCm  = -1.0f;
-int   currentLevel       = 0;
-
-unsigned long calibDoneAnimStart = 0;
-
-bool buzzerEnabled = true;
-bool freezeDisplay = false;
+extern State         currentState;
+extern float         maxDistanceCm;
+extern float         filteredDistanceCm;
+extern float         lastRawDistanceCm;
+extern int           currentLevel;
+extern unsigned long calibDoneAnimStart;
+extern bool          buzzerEnabled;
+extern bool          freezeDisplay;

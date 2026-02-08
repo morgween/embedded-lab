@@ -1,13 +1,21 @@
-// update these pins to match your real wiring
-// here: green = mute, red = calibration, yellow = freeze
+#pragma once
 
-const int ledPins[] = {16, 12, 7, 8, 25, 24, 23, 18, 15, 14};
+//====== bargraph leds ======
 
-const int BTN_CALIB_PIN  = 10; // green
-const int BTN_MUTE_PIN   = 9;  // yellow
-const int BTN_FREEZE_PIN = 11; // red
+static const int LED_PINS[] = {19, 20, 21, 47, 48, 45, 36, 37, 38, 39};
+static const int LED_COUNT  = sizeof(LED_PINS) / sizeof(LED_PINS[0]);
 
-const int BUZZER_PIN = 6;
+//====== ultrasonic sensor ======
 
-const int TRIG_PIN = 27;
-const int ECHO_PIN = 17;
+static const int TRIG_PIN = 5;
+static const int ECHO_PIN = 4;
+
+//====== buttons ======
+
+static const int BTN_CALIB_PIN  = 11;
+static const int BTN_MUTE_PIN   = 12;
+static const int BTN_FREEZE_PIN = 13;
+
+//====== buzzer ======
+
+static const int BUZZER_PIN = 14;
