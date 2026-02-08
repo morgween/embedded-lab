@@ -1,15 +1,15 @@
 #include <Arduino.h>
+#include "headers/config.h"
+#include "headers/pins.h"
 #include "headers/bargraph.h"
 #include "headers/ultrasonic.h"
 #include "headers/buzzer.h"
 #include "headers/buttons.h"
 
-// ================= helpers =========================
+//====== helpers ======
 
-// map distance to bargraph level 0..LED_COUNT
-int distanceToLevel(float distanceCm) {
-  if (distanceCm < 0) return 0;
-  if (distanceCm >= maxDistanceCm) return 0;
+static int distanceToLevel(float distanceCm) {
+  if (distanceCm < 0 || distanceCm >= maxDistanceCm) return 0;
 
   float ratio = 1.0f - (distanceCm / maxDistanceCm);
   if (ratio < 0.0f) ratio = 0.0f;
@@ -21,10 +21,9 @@ int distanceToLevel(float distanceCm) {
   return level;
 }
 
-// ================= states ==========================
+//====== state handlers ======
 
-// main distance mode: leds + buzzer
-void updateStateNormal() {
+static void updateStateNormal() {
   float raw = ultrasonic_measure_median_cm();
   lastRawDistanceCm = raw;
 
@@ -39,12 +38,8 @@ void updateStateNormal() {
     }
 
     int targetLevel = distanceToLevel(filteredDistanceCm);
-
-    if (targetLevel > currentLevel) {
-      currentLevel++;
-    } else if (targetLevel < currentLevel) {
-      currentLevel--;
-    }
+    if (targetLevel > currentLevel) currentLevel++;
+    else if (targetLevel < currentLevel) currentLevel--;
 
     bargraph_set_level(currentLevel);
   }
@@ -55,25 +50,19 @@ void updateStateNormal() {
   unsigned long now = millis();
   if (now - lastPrint > 500) {
     lastPrint = now;
-    Serial.print("raw=");
-    Serial.print(lastRawDistanceCm);
-    Serial.print(" cm, filt=");
-    Serial.print(filteredDistanceCm);
-    Serial.print(" cm, max=");
-    Serial.print(maxDistanceCm);
-    Serial.print(" cm, level=");
-    Serial.print(currentLevel);
-    Serial.print(", freeze=");
-    Serial.print(freezeDisplay ? "on" : "off");
-    Serial.print(", buzzer=");
-    Serial.println(buzzerEnabled ? "on" : "off");
+    Serial.print("raw=");     Serial.print(lastRawDistanceCm);
+    Serial.print(" filt=");   Serial.print(filteredDistanceCm);
+    Serial.print(" max=");    Serial.print(maxDistanceCm);
+    Serial.print(" level=");  Serial.print(currentLevel);
+    Serial.print(" freeze="); Serial.print(freezeDisplay ? "on" : "off");
+    Serial.print(" buzzer="); Serial.println(buzzerEnabled ? "on" : "off");
   }
 }
 
 // dot animation while calibrating
-void updateStateCalibrating() {
-  static int index = 0;
-  static int dir = 1;
+static void updateStateCalibrating() {
+  static int           index      = 0;
+  static int           dir        = 1;
   static unsigned long lastUpdate = 0;
 
   unsigned long now = millis();
@@ -81,22 +70,17 @@ void updateStateCalibrating() {
   lastUpdate = now;
 
   index += dir;
-  if (index >= LED_COUNT - 1) {
-    index = LED_COUNT - 1;
-    dir = -1;
-  } else if (index <= 0) {
-    index = 0;
-    dir = 1;
-  }
+  if (index >= LED_COUNT - 1) { index = LED_COUNT - 1; dir = -1; }
+  else if (index <= 0)        { index = 0;              dir =  1; }
 
   bargraph_set_dot(index);
   buzzer_force_off();
 }
 
-// short fill animation after successful calibration
-void updateStateCalibDoneAnim() {
-  static int level = 0;
-  static int dir = 1;
+// fill animation after successful calibration
+static void updateStateCalibDoneAnim() {
+  static int           level      = 0;
+  static int           dir        = 1;
   static unsigned long lastUpdate = 0;
 
   unsigned long now = millis();
@@ -113,20 +97,15 @@ void updateStateCalibDoneAnim() {
   if (now - lastUpdate > 60) {
     lastUpdate = now;
     level += dir;
-    if (level >= LED_COUNT) {
-      level = LED_COUNT;
-      dir = -1;
-    } else if (level <= 0) {
-      level = 0;
-      dir = 1;
-    }
+    if (level >= LED_COUNT) { level = LED_COUNT; dir = -1; }
+    else if (level <= 0)    { level = 0;         dir =  1; }
     bargraph_set_level(level);
   }
 
   buzzer_force_off();
 }
 
-// ================= setup / loop ====================
+//====== setup / loop ======
 
 void setup() {
   Serial.begin(115200);
@@ -147,14 +126,14 @@ void loop() {
   if (ev == BUTTON_CALIB_PRESS) {
     if (currentState == STATE_NORMAL) {
       currentState = STATE_CALIBRATING;
-      Serial.println("calibration: place hand at desired max distance and press again");
+      Serial.println("calibration: place hand at max distance and press again");
     } else if (currentState == STATE_CALIBRATING) {
       if (lastRawDistanceCm > 0) {
         maxDistanceCm = lastRawDistanceCm;
         filteredDistanceCm = -1.0f;
         currentState = STATE_CALIB_DONE_ANIM;
         calibDoneAnimStart = millis();
-        Serial.print("calibration ok, new max distance = ");
+        Serial.print("calibration ok, max=");
         Serial.print(maxDistanceCm);
         Serial.println(" cm");
       } else {
@@ -163,9 +142,7 @@ void loop() {
     }
   } else if (ev == BUTTON_MUTE_PRESS) {
     buzzerEnabled = !buzzerEnabled;
-    if (!buzzerEnabled) {
-      buzzer_force_off();
-    }
+    if (!buzzerEnabled) buzzer_force_off();
     Serial.print("buzzer: ");
     Serial.println(buzzerEnabled ? "on" : "off");
   } else if (ev == BUTTON_FREEZE_PRESS) {
@@ -175,14 +152,8 @@ void loop() {
   }
 
   switch (currentState) {
-    case STATE_NORMAL:
-      updateStateNormal();
-      break;
-    case STATE_CALIBRATING:
-      updateStateCalibrating();
-      break;
-    case STATE_CALIB_DONE_ANIM:
-      updateStateCalibDoneAnim();
-      break;
+    case STATE_NORMAL:          updateStateNormal();         break;
+    case STATE_CALIBRATING:     updateStateCalibrating();    break;
+    case STATE_CALIB_DONE_ANIM: updateStateCalibDoneAnim();  break;
   }
 }
