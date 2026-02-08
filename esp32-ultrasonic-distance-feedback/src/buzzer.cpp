@@ -1,8 +1,7 @@
 #include <Arduino.h>
 #include "headers/buzzer.h"
-
-// update this pin to match your buzzer wiring
-const int BUZZER_PIN = 6;
+#include "headers/config.h"
+#include "headers/pins.h"
 
 void buzzer_init() {
   pinMode(BUZZER_PIN, OUTPUT);

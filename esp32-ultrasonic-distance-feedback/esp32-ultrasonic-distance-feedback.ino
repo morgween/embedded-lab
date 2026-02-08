@@ -4,32 +4,6 @@
 #include "headers/buzzer.h"
 #include "headers/buttons.h"
 
-// ================= distance config =================
-
-float maxDistanceCm = 100.0f;               // initial maximum distance in cm
-const float DISTANCE_FILTER_ALPHA = 0.7f;    // ema factor for smoothing
-
-// ================= state machine ===================
-
-enum State {
-  STATE_NORMAL = 0,        // distance mode: leds + buzzer
-  STATE_CALIBRATING,       // calibration mode: dot animation
-  STATE_CALIB_DONE_ANIM    // short "happy" fill animation after calibration
-};
-
-State currentState = STATE_NORMAL;
-
-// ================= globals =========================
-
-float filteredDistanceCm = -1.0f;
-float lastRawDistanceCm  = -1.0f;
-int   currentLevel       = 0;
-
-unsigned long calibDoneAnimStart = 0;
-
-bool buzzerEnabled = true;
-bool freezeDisplay = false;
-
 // ================= helpers =========================
 
 // map distance to bargraph level 0..LED_COUNT
@@ -119,7 +93,7 @@ void updateStateCalibrating() {
   buzzer_force_off();
 }
 
-// short happy fill animation after successful calibration
+// short fill animation after successful calibration
 void updateStateCalibDoneAnim() {
   static int level = 0;
   static int dir = 1;

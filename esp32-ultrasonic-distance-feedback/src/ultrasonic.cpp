@@ -1,15 +1,7 @@
 #include <Arduino.h>
 #include "headers/ultrasonic.h"
-
-// update these pins to match your wiring for hc-sr04
-const int TRIG_PIN = 27;
-const int ECHO_PIN = 17;
-
-// echo timeout in microseconds
-const unsigned long ECHO_TIMEOUT_US = 30000;
-
-// number of samples for median
-const int MEDIAN_SAMPLES = 5;
+#include "headers/config.h"
+#include "headers/pins.h"
 
 // single raw measurement, returns cm or -1 if no echo
 static float ultrasonic_measure_once_cm() {

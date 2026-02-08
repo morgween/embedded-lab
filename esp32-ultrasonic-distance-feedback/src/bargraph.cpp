@@ -1,10 +1,7 @@
 #include <Arduino.h>
 #include "headers/bargraph.h"
-
-// update these pins to match your real wiring
-// order is from "first" led to "last" led on the bargraph or LED strip/LEDs
-const int ledPins[] = {16, 12, 7, 8, 25, 24, 23, 18, 15, 14};
-const int LED_COUNT = sizeof(ledPins) / sizeof(ledPins[0]);
+#include "headers/config.h"
+#include "headers/pins.h"
 
 void bargraph_init() {
   for (int i = 0; i < LED_COUNT; i++) {

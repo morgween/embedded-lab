@@ -1,24 +1,7 @@
 #include <Arduino.h>
 #include "headers/buttons.h"
-
-// update these pins to match your real wiring
-// here: green = mute, red = calibration, yellow = freeze
-const int BTN_CALIB_PIN  = 10; // green
-const int BTN_MUTE_PIN   = 9;  // yellow
-const int BTN_FREEZE_PIN = 11; // red
-
-// debounce state
-static bool btnCalibStable      = false;
-static bool btnCalibPrevStable  = false;
-static unsigned long btnCalibLastChange = 0;
-
-static bool btnMuteStable       = false;
-static bool btnMutePrevStable   = false;
-static unsigned long btnMuteLastChange = 0;
-
-static bool btnFreezeStable     = false;
-static bool btnFreezePrevStable = false;
-static unsigned long btnFreezeLastChange = 0;
+#include "headers/pins.h"
+#include "headers/config.h"
 
 void buttons_init() {
   pinMode(BTN_CALIB_PIN, INPUT_PULLUP);
