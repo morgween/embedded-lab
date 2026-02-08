@@ -22,6 +22,7 @@ Projects focus on **real hardware behavior**, **signal stability**, and **clean 
 | Project | Description |
 |--------|-------------|
 | [esp32-ultrasonic-distance-feedback](https://github.com/morgween/embedded-lab/tree/main/esp32-ultrasonic-distance-feedback) | Ultrasonic distance indicator with LED bargraph, buzzer and buttons |
+| [esp32-thermistor-fan-automation](https://github.com/morgween/embedded-lab/tree/main/esp32-thermistor-fan-automation) | Automated fan with thermistor, control buttons and information leds |
 
 More projects will be added over time.
 
